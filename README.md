@@ -1,3 +1,26 @@
+## Installation
+
+```bash
+$ npm install
+```
+
+## Running the app
+
+```bash
+# development
+$ npm run start
+
+# watch mode
+$ npm run start:dev
+```
+
+## .ENV template
+
+```
+SECRET_KEY=
+DB_HOST=
+```
+
 ### GET /api/contacts
 
 - Returns an array of all contacts in json format with status 200
