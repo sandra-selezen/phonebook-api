@@ -1,12 +1,13 @@
 const bcrypt = require('bcrypt');
-// const { nanoid } = require('nanoid');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const { SECRET_KEY } = process.env;
 
 const { User } = require('../../models');
 const { HttpError } = require('../../helpers');
 
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
   const user = await User.findOne({ email });
 
   if (user) {
@@ -14,21 +15,21 @@ const registerUser = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
-  // const verificationToken = nanoid()
+  const payload = {
+    name,
+    email,
 
-  const newUser = await User.create({ ...req.body, password: hashPassword })
+  }
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: '23h' });
 
-  // const verifyEmail = {
-  //   to: email,
-  //   subject: 'Verify your email',
-  //   html: `<div style="font-family: inherit"><p>Click <a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">verify email</a></p></div>`,
-  // }
-
-  // await sendEmail(verifyEmail)
+  const newUser = await User.create({ ...req.body, password: hashPassword, token })
 
   res.status(201).json({
-    name: newUser.name,
-    email: newUser.email,
+    token,
+    user: {
+      name: newUser.name,
+      email: newUser.email,
+    }
   });
 }
 
